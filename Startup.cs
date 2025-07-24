@@ -1,5 +1,7 @@
 using DotNetEnv;
 using ERP.Context;
+using ERP.Repositories.Clients;
+using ERP.Repositories.Interfaces.Clients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,11 +30,14 @@ namespace ERP
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-           
-
             services.AddControllersWithViews();
+          
+            //connection bd
             services.AddEntityFrameworkSqlServer().AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            //Dependency injection
+            services.AddScoped<IClientInterface, ClientRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
