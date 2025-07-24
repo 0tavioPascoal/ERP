@@ -2,19 +2,26 @@
 using ERP.Repositories.Clients;
 using ERP.Repositories.Interfaces.Clients;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ERP.Controllers {
     public class ClientController : Controller {
 
-        private readonly IClientInterface _clientInterface;
+        private readonly IClientRepository _clientRepository;
 
-        public ClientController(IClientInterface clientInterface) {
-            _clientInterface = clientInterface;
+        public ClientController(IClientRepository clientInterface) {
+            _clientRepository = clientInterface;
         }
 
         public IActionResult Index() {
-            return View();
+
+             var viewModel = new ClientIndexViewModel {
+                Clients = _clientRepository.GetCLients(),
+                NewClient = new Client()
+            };
+
+            return View(viewModel);
         }
 
       
@@ -36,7 +43,7 @@ namespace ERP.Controllers {
                 return BadRequest(ModelState);  
             }
 
-            await _clientInterface.CreateClientAsync(client);
+            await _clientRepository.CreateClientAsync(client);
 
             return RedirectToAction("Index");
         }  

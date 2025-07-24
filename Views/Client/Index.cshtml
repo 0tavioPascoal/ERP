@@ -1,4 +1,8 @@
-﻿@{
+﻿@model ClientIndexViewModel
+
+
+
+@{
     ViewData["Title"] = "Clientes";
 }
 
@@ -24,39 +28,29 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto@gmail.com</td>
-                <td>14 999999999</td>
-                <td>
-                    <button type="button" class="btn btn-warning" >Editar</button>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger">Deletar</button>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton@gmail.com</td>
-                <td>14 999999999</td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Larry the Bird</td>
-                <td>Bird@gmail.com</td>
-                <td>14 99999999</td>
-                <td></td>
-            </tr>
+            @if (Model?.Clients != null && Model.Clients.Any()) {
+                    @foreach (Client item in Model.Clients) {
+                        <tr>
+                            <th scope="row">@item.Id</th>
+                            <td>@item.Name</td>
+                            <td>@item.Email</td>
+                            <td>@item.Phone</td>
+                            <td>
+                                <button type="button" class="btn btn-warning">Editar</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger">Deletar</button>
+                            </td>
+                        </tr>
+                    }
+                }
         </tbody>
     </table>
 
 </div>
 
 @* view partial *@
-@await Html.PartialAsync("_ClientModal")
+@await Html.PartialAsync("_ClientModal", Model.NewClient)
 
 
 @* section scripts *@

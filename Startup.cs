@@ -37,7 +37,7 @@ namespace ERP
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             //Dependency injection
-            services.AddScoped<IClientInterface, ClientRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
