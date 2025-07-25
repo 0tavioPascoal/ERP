@@ -1,8 +1,6 @@
 ﻿using ERP.Models;
-using ERP.Repositories.Clients;
 using ERP.Repositories.Interfaces.Clients;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ERP.Controllers {
@@ -14,10 +12,12 @@ namespace ERP.Controllers {
             _clientRepository = clientInterface;
         }
 
-        public IActionResult Index() {
+        public async Task<IActionResult> Index() {
 
-             var viewModel = new ClientIndexViewModel {
-                Clients = _clientRepository.GetCLients(),
+            var clients = await _clientRepository.GetCLients();
+
+            var viewModel = new ClientIndexViewModel {
+                Clients = clients,
                 NewClient = new Client()
             };
 
@@ -29,23 +29,54 @@ namespace ERP.Controllers {
             return View();
         }
 
-        public IActionResult EditClient() {
-            return View();
-        }
-
-        public IActionResult DeleteClient() {
-            return View();
-        }
-
         [HttpPost]
-        public async Task<IActionResult> CreateClient([FromBody] Client client) {
+        public async Task<IActionResult> CreateClient(Client client) {
             if (!ModelState.IsValid) {
-                return BadRequest(ModelState);  
+                return BadRequest(ModelState);
             }
 
             await _clientRepository.CreateClientAsync(client);
 
             return RedirectToAction("Index");
-        }  
+        }
+
+        public async Task<IActionResult> EditClient(int id) {
+            Client client = await _clientRepository.GetClientByIdAsync(id);
+            return View(client);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditClient(Client client) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updatedClient = await _clientRepository.EditClientAsync(client);
+
+            if (updatedClient == null)
+                return NotFound();
+
+            return RedirectToAction("Index");
+        }
+
+    
+        public async Task<IActionResult> DeleteClient(int id) {
+            var deleted = await _clientRepository.DeleteClientAsync(id);
+            if (!deleted)
+            return NotFound();
+
+            return RedirectToAction("Index");
+        }
+
+      
+        public async Task<IActionResult> Delete(int id) {
+
+            var client = await _clientRepository.GetClientByIdAsync(id);
+      
+
+            return View(client);
+        }
+
+
     }
 }

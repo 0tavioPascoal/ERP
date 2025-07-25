@@ -1,7 +1,9 @@
 ﻿using ERP.Context;
 using ERP.Models;
 using ERP.Repositories.Interfaces.Clients;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,8 +23,37 @@ namespace ERP.Repositories.Clients {
             return client;
         }
 
-        public List<Client> GetCLients() {
-           return _context.Clients.ToList();
+        public async Task<bool> DeleteClientAsync(int id) {
+            var client = await _context.Clients.FindAsync(id);
+            if (client == null)
+                return false;
+
+            _context.Clients.Remove(client);
+            await _context.SaveChangesAsync();
+           return true;
         }
+
+        public async Task<Client> EditClientAsync(Client client) {
+            var existingClient = await _context.Clients.FindAsync(client.Id);
+            if (existingClient == null) {
+                return null;
+            }
+
+            existingClient.Name = client.Name;
+            existingClient.Email = client.Email;
+            existingClient.Phone = client.Phone;
+
+            await _context.SaveChangesAsync();
+            return existingClient;
+        }
+
+        public Task<Client> GetClientByIdAsync(int id) {
+            return _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<List<Client>> GetCLients() {
+           return await _context.Clients.ToListAsync();
+        }
+
     }
 }
