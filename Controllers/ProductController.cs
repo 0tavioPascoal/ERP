@@ -32,5 +32,39 @@ namespace ERP.Controllers {
             await _productRepository.AddAsync(product);
             return RedirectToAction("Index");
         }
+
+
+        public async Task<IActionResult> EditProduct(int id) {
+
+            Product product = await _productRepository.GetByIdAsync(id);
+            return View(product);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProduct(Product product) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updatedClient = await _productRepository.UpdateAsync(product);
+
+            if (updatedClient == null)
+                return NotFound();
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> DeleteProduct(int id) {
+            var deleted = await _productRepository.DeleteAsync(id);
+            if(!deleted)
+                return NotFound();
+
+            return RedirectToAction("Index");
+        }
+
+
+        public async Task<IActionResult> Delete(int id) {
+            Product prod = await _productRepository.GetByIdAsync(id);
+            return View(prod);
+        }
     }
 }

@@ -1,0 +1,18 @@
+﻿@model ERP.Models.Product
+
+@{
+    ViewData["Title"] = "Confirmar Exclusão de Cliente";
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Confirmar Exclusão de <span>@Model.Name</span></h1>
+</div>
+
+<div class="text-center">
+    <a role="button" asp-controller="Product" asp-action="DeleteProduct" asp-route-id="@Model.Id" class="btn btn-success mx-2">
+        Confirmar
+    </a>
+    <a role="button" asp-controller="Product" asp-action="Index" class="btn btn-warning mx-2">
+        Cancelar
+    </a>
+</div>
