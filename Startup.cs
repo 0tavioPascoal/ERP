@@ -2,18 +2,15 @@ using DotNetEnv;
 using ERP.Context;
 using ERP.Repositories.Clients;
 using ERP.Repositories.Interfaces.Clients;
+using ERP.Repositories.Interfaces.Products;
+using ERP.Repositories.Products;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace ERP
 {
@@ -38,6 +35,7 @@ namespace ERP
 
             //Dependency injection
             services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
