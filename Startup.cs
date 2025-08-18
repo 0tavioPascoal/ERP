@@ -2,7 +2,10 @@
 using ERP.Repositories.Clients;
 using ERP.Repositories.Interfaces.Clients;
 using ERP.Repositories.Interfaces.Products;
+using ERP.Repositories.Interfaces.Sales;
 using ERP.Repositories.Products;
+using ERP.Repositories.Sales;
+using ERP.Services.Sales;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +33,12 @@ namespace ERP {
             // Injeção de dependência
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+
+            // Repository
+            services.AddScoped<ISaleRepository, SalesRepository>();
+
+            // Service
+            services.AddScoped<SaleService>();
         }
 
         // Configura o pipeline

@@ -12,5 +12,9 @@ namespace ERP.Context {
 
         public DbSet<Product> Products { get; set; }
 
+        public DbSet<Sale> Sales { get; set; }
+
+        public DbSet<SaleItem> SaleItems { get; set; }
+
     }
 }
