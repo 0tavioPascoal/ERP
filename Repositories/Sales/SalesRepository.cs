@@ -50,10 +50,35 @@ namespace ERP.Repositories.Sales {
         }
 
         public async Task<Sale> UpdateAsync(Sale sale) {
-            sale.Total = sale.Items.Sum(i => i.Quantity * i.UnitPrice);
-            _context.Sales.Update(sale);
+            var existingSale = await _context.Sales
+                .Include(s => s.Items)
+                .FirstOrDefaultAsync(s => s.Id == sale.Id);
+
+            if (existingSale == null) return null;
+
+            // Ajusta estoque: devolve produtos removidos ou reduz se quantidade aumentou
+            foreach (var oldItem in existingSale.Items) {
+                var product = await _context.Products.FindAsync(oldItem.ProductId);
+                var newItem = sale.Items.FirstOrDefault(i => i.ProductId == oldItem.ProductId);
+
+                if (newItem == null) // item removido
+                    product.Stock += oldItem.Quantity;
+                else // item existente
+                    product.Stock += oldItem.Quantity - newItem.Quantity;
+            }
+
+            // Atualiza os itens da venda
+            existingSale.Items = sale.Items;
+            existingSale.ClientId = sale.ClientId;
+            existingSale.PaymentMethod = sale.PaymentMethod;
+
+            // Recalcula total
+            existingSale.Total = existingSale.Items.Sum(i => i.Quantity * i.UnitPrice);
+
+            _context.Sales.Update(existingSale);
             await _context.SaveChangesAsync();
-            return sale;
+
+            return existingSale;
         }
     }
 }

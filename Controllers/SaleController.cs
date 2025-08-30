@@ -55,5 +55,35 @@ namespace ERP.Controllers {
 
             return RedirectToAction("Index");
         }
+
+        public async Task<IActionResult> EditSale(int id) {
+            var sale = await _saleService.GetByIdAsync(id);
+            if (sale == null) {
+                return NotFound();
+            }
+
+            // Carregar listas para dropdowns
+            ViewBag.Clients = await _context.Clients.ToListAsync();
+            ViewBag.Products = await _context.Products.Where(p => p.Stock > 0).ToListAsync();
+            ViewBag.PaymentMethods = new List<string> { "Dinheiro", "Cartão", "Pix" };
+
+            return View(sale);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSale(Sale sale) {
+            if (ModelState.IsValid) {
+                await _saleService.UpdateAsync(sale); 
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Clients = await _context.Clients.ToListAsync();
+            ViewBag.Products = await _context.Products.ToListAsync();
+            ViewBag.PaymentMethods = new List<string> { "Dinheiro", "Cartão", "Pix" };
+
+            return View(sale);
+        }
+
     }
 }

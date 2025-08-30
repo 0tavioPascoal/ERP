@@ -6,6 +6,10 @@
     <title>@ViewData["Title"] - ERP</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link href="https://cdn.datatables.net/v/dt/dt-2.3.3/datatables.min.css" rel="stylesheet" integrity="sha384-C0ogMvg31Mu1GWzYxEEobPIlBlGbp/DY94Le4M9y/HFd9VGLT1zWL7MErNMsM2x6" crossorigin="anonymous">
+
+    
+
 </head>
 <body>
     <header>
@@ -56,6 +60,10 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/Products.js" asp-append-version="true"></script>
+    <script src="~/js/Clients.js" asp-append-version="true"></script>
+    <script src="~/js/Sales.js" asp-append-version="true"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.3.3/datatables.min.js" integrity="sha384-qyN6ZT87DHLvgCDC+GYE3myTUDGpz3swpW19cYxOh4oa/8GNSGPMteQwbyM6Ot0D" crossorigin="anonymous"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

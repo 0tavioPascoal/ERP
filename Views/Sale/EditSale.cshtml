@@ -1,0 +1,148 @@
+﻿@model ERP.Models.Sale
+
+@{
+    ViewData["Title"] = "Editar Venda";
+    var clients = ViewBag.Clients as List<ERP.Models.Client> ?? new List<ERP.Models.Client>();
+    var products = ViewBag.Products as List<ERP.Models.Product> ?? new List<ERP.Models.Product>();
+    var paymentMethods = ViewBag.PaymentMethods as List<string> ?? new List<string>();
+}
+
+<div class="text-center">
+    <h1 class="display-4">Editar Venda</h1>
+    <p class="lead">Use este formulário para editar uma venda existente.</p>
+</div>
+
+<form asp-action="EditSale" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="ClientId">Cliente:</label>
+        <select asp-for="ClientId" class="form-control"
+                asp-items="@(new SelectList(clients, "Id", "Name", Model.ClientId))">
+            <option value="">Selecione um cliente</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PaymentMethod">Forma de Pagamento:</label>
+        <select asp-for="PaymentMethod" class="form-control"
+                asp-items="@(new SelectList(paymentMethods, Model.PaymentMethod))">
+            <option value="">Selecione</option>
+        </select>
+    </div>
+
+    <h4>Produtos</h4>
+    <div class="form-group d-flex gap-2 mb-3">
+        <select id="productSelect" class="form-control">
+            <option value="">Selecione um produto</option>
+            @foreach (var product in products)
+            {
+                <option value="@product.Id" data-price="@product.Price">@product.Name (@product.Price.ToString("C"))</option>
+            }
+        </select>
+        <input type="number" id="productQuantity" class="form-control" placeholder="Quantidade" min="1" value="1" />
+        <button type="button" id="addProductBtn" class="btn btn-primary">Adicionar Produto</button>
+    </div>
+
+    <table class="table table-hover" id="itemsTable">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* Preenche os itens já existentes da venda *@
+            @{
+                int itemIndex = 0;
+                foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.Product?.Name
+                            <input type="hidden" name="Items[@itemIndex].ProductId" value="@item.ProductId" />
+                        </td>
+                        <td>@item.UnitPrice.ToString("C")
+                            <input type="hidden" name="Items[@itemIndex].UnitPrice" value="@item.UnitPrice" />
+                        </td>
+                        <td>@item.Quantity
+                            <input type="hidden" name="Items[@itemIndex].Quantity" value="@item.Quantity" />
+                        </td>
+                        <td><button type="button" class="btn btn-danger btn-sm removeBtn">Remover</button></td>
+                    </tr>
+                    itemIndex++;
+                }
+            }
+        </tbody>
+    </table>
+
+    <div class="mb-3">
+        <label>Total da Venda:</label>
+        <input type="text" id="totalSale" class="form-control" readonly value="@Model.Total.ToString("C")" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+    <a role="button" asp-action="Index" class="btn btn-warning ml-3">Cancelar</a>
+</form>
+
+@section Scripts {
+    <script>
+        let itemIndex = @Model.Items.Count;
+        const produtosAdicionados = {};
+
+        function atualizarTotal() {
+            let total = 0;
+            document.querySelectorAll('#itemsTable tbody tr').forEach(row => {
+                const qty = parseFloat(row.querySelector('input[name*="Quantity"]').value);
+                const price = parseFloat(row.querySelector('input[name*="UnitPrice"]').value);
+                total += qty * price;
+            });
+            document.getElementById('totalSale').value =
+                total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // Botões remover existentes
+        document.querySelectorAll('.removeBtn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                this.closest('tr').remove();
+                atualizarTotal();
+            });
+        });
+
+        // Adicionar novos produtos
+        document.getElementById('addProductBtn').addEventListener('click', function () {
+            const select = document.getElementById('productSelect');
+            const quantityInput = document.getElementById('productQuantity');
+            const tableBody = document.querySelector('#itemsTable tbody');
+
+            const productId = select.value;
+            const productName = select.options[select.selectedIndex]?.text;
+            const price = parseFloat(select.options[select.selectedIndex]?.dataset.price);
+            const quantity = parseInt(quantityInput.value);
+
+            if (!productId || quantity <= 0) return;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${productName}<input type="hidden" name="Items[${itemIndex}].ProductId" value="${productId}" /></td>
+                <td>${price.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}<input type="hidden" name="Items[${itemIndex}].UnitPrice" value="${price}" /></td>
+                <td>${quantity}<input type="hidden" name="Items[${itemIndex}].Quantity" value="${quantity}" /></td>
+                <td><button type="button" class="btn btn-danger btn-sm removeBtn">Remover</button></td>
+            `;
+            tableBody.appendChild(row);
+
+            row.querySelector('.removeBtn').addEventListener('click', function () {
+                row.remove();
+                atualizarTotal();
+            });
+
+            itemIndex++;
+            select.value = "";
+            quantityInput.value = 1;
+            atualizarTotal();
+        });
+
+        atualizarTotal();
+    </script>
+}
