@@ -85,5 +85,22 @@ namespace ERP.Controllers {
             return View(sale);
         }
 
+        public async Task<IActionResult> DeleteSale(int id) {
+            var delete = await _saleService.DeleteAsync(id);
+            if (delete == null )
+                return NotFound();
+
+            return RedirectToAction("Index");
+        }
+
+
+        public async Task<IActionResult> Delete(int id) {
+
+            var client = await _saleService.GetByIdAsync(id);
+
+
+            return View(client);
+        }
+
     }
 }
