@@ -5,6 +5,7 @@ using ERP.Repositories.Interfaces.Products;
 using ERP.Repositories.Interfaces.Sales;
 using ERP.Repositories.Products;
 using ERP.Repositories.Sales;
+using ERP.Services.Graphic;
 using ERP.Services.Reports;
 using ERP.Services.Sales;
 using FastReport.Data;
@@ -43,6 +44,7 @@ namespace ERP {
 
             // Service
             services.AddScoped<SaleService>();
+            services.AddScoped<SalesGraphicService>();
 
             services.AddScoped<ReportService>();
         }
