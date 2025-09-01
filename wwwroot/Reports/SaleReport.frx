@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="2024-04-01" ReportInfo.Modified="09/01/2025 20:10:31" ReportInfo.CreatorVersion="2022.1.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqM7gJFg/iaLrqMhRfGy5lGqc18KyScMY8QCzDExpS3JAlFAc7f/9wU3c7C0a/m4lVtPBsVpfl1uvg+EqlIF3bSjIL7uN3W4sFLvmv8p7Puo+ptEet/rpx9YZ49sM/7z7z5t8VXWQ1fEbaEC2FUZqcUxIENlz28gOexIIVoWNlMebieldJzppkYLOLRFlDB28JkYJdNejCahN0l9Vdylc+8A==">
+      <TableDataSource Name="Clients" DataType="System.Int32" Enabled="true" TableName="Clients">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Phone" DataType="System.String"/>
+        <Column Name="Email" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Products" DataType="System.Int32" Enabled="true" TableName="Products">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Description" DataType="System.String"/>
+        <Column Name="Price" DataType="System.Decimal"/>
+        <Column Name="Stock" DataType="System.Int32"/>
+        <Column Name="Category" DataType="System.String"/>
+        <Column Name="Created" DataType="System.DateTime"/>
+        <Column Name="Modified" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="Sales" DataType="System.Int32" Enabled="true" TableName="Sales">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="ClientId" DataType="System.Int32"/>
+        <Column Name="SaleDate" DataType="System.DateTime"/>
+        <Column Name="PaymentMethod" DataType="System.String"/>
+        <Column Name="Total" DataType="System.Decimal"/>
+      </TableDataSource>
+      <TableDataSource Name="SaleItems" DataType="System.Int32" Enabled="true" TableName="SaleItems">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="SaleId" DataType="System.Int32"/>
+        <Column Name="ProductId" DataType="System.Int32"/>
+        <Column Name="Quantity" DataType="System.Int32"/>
+        <Column Name="UnitPrice" DataType="System.Decimal"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Clients_Sales" ParentDataSource="Clients" ChildDataSource="Sales" ParentColumns="Id" ChildColumns="ClientId" Enabled="true"/>
+    <Relation Name="Products_SaleItems" ParentDataSource="Products" ChildDataSource="SaleItems" ParentColumns="Id" ChildColumns="ProductId" Enabled="true"/>
+    <Relation Name="Sales_SaleItems" ParentDataSource="Sales" ChildDataSource="SaleItems" ParentColumns="Id" ChildColumns="SaleId" Enabled="true"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="56.7">
+      <TextObject Name="Title" Left="9.45" Top="9.45" Width="699.3" Height="18.9" Text="Relatório Geral" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <DataBand Name="DataBandItems" Top="60.7" Width="718.2" Height="20.55" DataSource="Sales">
+      <DataBand Name="Data1" Top="145.95" Width="718.2" Height="56.7" DataSource="SaleItems">
+        <TextObject Name="Text2" Left="283.5" Top="18.9" Width="94.5" Height="18.9" Text="[SaleItems.Quantity]" HorzAlign="Center" Font="Arial, 12pt"/>
+        <TextObject Name="Text4" Left="9.45" Top="18.9" Width="245.7" Height="18.9" Text="[SaleItems.Products.Name]" Font="Arial, 12pt"/>
+        <TextObject Name="Text6" Left="585.9" Top="18.9" Width="94.5" Height="18.9" Text="[SaleItems.Products.Price]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Justify" WordWrap="false" Font="Arial, 12pt" Trimming="EllipsisCharacter"/>
+        <TextObject Name="Text7" Left="444.15" Top="18.9" Width="94.5" Height="18.9" Text="[SaleItems.Products.Stock]" HorzAlign="Center" Font="Arial, 12pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="85.25" Width="718.2" Height="56.7" Border.Lines="All" Fill.Color="Gainsboro">
+          <TextObject Name="Text11" Left="444.15" Top="18.9" Width="94.5" Height="18.9" Text="Quant. Estoque" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text10" Left="283.5" Top="18.9" Width="94.5" Height="18.9" Text="Quant. Venda" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text9" Left="9.45" Top="18.9" Width="245.7" Height="18.9" Text="Nome" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text12" Left="585.9" Top="18.9" Width="94.5" Height="18.9" Text="Preço" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        </DataHeaderBand>
+      </DataBand>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="206.65" Width="718.2" Height="85.05" Border.Lines="Top">
+      <TextObject Name="Text8" Left="226.8" Top="47.25" Width="274.05" Height="18.9" Text="Relatório gerado em [Date]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+    </ReportSummaryBand>
+  </ReportPage>
+</Report>

@@ -5,7 +5,9 @@ using ERP.Repositories.Interfaces.Products;
 using ERP.Repositories.Interfaces.Sales;
 using ERP.Repositories.Products;
 using ERP.Repositories.Sales;
+using ERP.Services.Reports;
 using ERP.Services.Sales;
+using FastReport.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +32,8 @@ namespace ERP {
             services.AddEntityFrameworkSqlServer().AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection));
+
             // Injeção de dependência
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
@@ -39,6 +43,8 @@ namespace ERP {
 
             // Service
             services.AddScoped<SaleService>();
+
+            services.AddScoped<ReportService>();
         }
 
         // Configura o pipeline
@@ -58,6 +64,8 @@ namespace ERP {
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseFastReport();
 
             app.UseRouting();
 
