@@ -16,7 +16,7 @@ namespace ERP.Models {
         public string Name { get; set; }
 
         [Phone(ErrorMessage = "Número de telefone inválido")]
-        [Required]
+        [Required(ErrorMessage = "Número de telefone inválido")]
         [StringLength(20)]
         public string Phone { get; set; }
 

@@ -31,13 +31,15 @@ namespace ERP.Controllers {
 
         [HttpPost]
         public async Task<IActionResult> CreateClient(Client client) {
-            if (!ModelState.IsValid) {
-                return BadRequest(ModelState);
+            if (ModelState.IsValid) {
+
+                await _clientRepository.CreateClientAsync(client);
+
+                return RedirectToAction("Index");
             }
 
-            await _clientRepository.CreateClientAsync(client);
-
-            return RedirectToAction("Index");
+            return View(client);
+            
         }
 
         public async Task<IActionResult> EditClient(int id) {
@@ -48,15 +50,18 @@ namespace ERP.Controllers {
 
         [HttpPost]
         public async Task<IActionResult> EditClient(Client client) {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (ModelState.IsValid) {
 
-            var updatedClient = await _clientRepository.EditClientAsync(client);
+                var updatedClient = await _clientRepository.EditClientAsync(client);
 
-            if (updatedClient == null)
-                return NotFound();
+                if (updatedClient == null)
+                    return NotFound();
 
-            return RedirectToAction("Index");
+                return RedirectToAction("Index");
+            }
+
+            return View(client);
+
         }
 
     

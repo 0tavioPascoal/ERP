@@ -12,9 +12,10 @@ namespace ERP.Models {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "O cliente é obrigatório")]
+        [Range(1, int.MaxValue, ErrorMessage = "Selecione um cliente válido")]
         [ForeignKey("Client")]
         public int ClientId { get; set; }
+
         public Client Client { get; set; }
 
         [Required]

@@ -18,14 +18,17 @@
     <div class="form-group">
         <label asp-for="Name">Nome: </label>
         <input asp-for="Name" type="text" class="form-control"  placeholder="Insira o nome do cliente">
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Email">Email: </label>
         <input asp-for="Email" type="email" class="form-control"  placeholder="Insira o email do cliente">
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Phone">Telefone: </label>
         <input asp-for="Phone" type="tel" class="form-control"  placeholder="Insira o telefone do cliente">
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     
     <button type="submit" class="btn btn-success">Editar</button>

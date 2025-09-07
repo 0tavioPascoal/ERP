@@ -19,8 +19,10 @@
         <label asp-for="ClientId">Cliente:</label>
         <select asp-for="ClientId" class="form-control"
                 asp-items="@(new SelectList(clients, "Id", "Name", Model.ClientId))">
-            <option value="">Selecione um cliente</option>
+            <option value="0">Selecione um cliente</option>
         </select>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
+
     </div>
 
     <div class="form-group">
@@ -29,6 +31,8 @@
                 asp-items="@(new SelectList(paymentMethods, Model.PaymentMethod))">
             <option value="">Selecione</option>
         </select>
+        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+
     </div>
 
     <h4>Produtos</h4>

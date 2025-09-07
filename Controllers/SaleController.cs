@@ -25,12 +25,17 @@ namespace ERP.Controllers {
         }
 
         public  async Task<IActionResult> CreateSale() {
+            if (ModelState.IsValid) {
+                ViewBag.Clients = await _context.Clients.ToListAsync();
+                ViewBag.Products = await _context.Products.Where(p => p.Stock > 0).ToListAsync();
+                ViewBag.PaymentMethods = new List<string> { "Dinheiro", "Cartão", "Pix" };
 
-            ViewBag.Clients = await _context.Clients.ToListAsync();
-            ViewBag.Products = await _context.Products.Where(p => p.Stock > 0).ToListAsync();
-            ViewBag.PaymentMethods = new List<string> { "Dinheiro", "Cartão", "Pix" };
+                return View();
+            }
 
             return View();
+
+            
         }
 
         [HttpPost]
@@ -57,6 +62,7 @@ namespace ERP.Controllers {
         }
 
         public async Task<IActionResult> EditSale(int id) {
+
             var sale = await _saleService.GetByIdAsync(id);
             if (sale == null) {
                 return NotFound();
