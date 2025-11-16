@@ -36,6 +36,9 @@ namespace ERP {
 
             string conn = Environment.GetEnvironmentVariable("DB_CONNECTION");
 
+            if (string.IsNullOrEmpty(conn))
+                throw new InvalidOperationException("DB_CONNECTION não configurada.");
+
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(conn)
             );
