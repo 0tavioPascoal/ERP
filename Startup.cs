@@ -1,4 +1,5 @@
-﻿using ERP.Context;
+﻿using dotenv.net;
+using ERP.Context;
 using ERP.Repositories.Clients;
 using ERP.Repositories.Interfaces.Clients;
 using ERP.Repositories.Interfaces.Products;
@@ -18,23 +19,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Globalization;
 
 namespace ERP {
     public class Startup {
         public Startup(IConfiguration configuration) {
+            DotEnv.Load();
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
         // Adiciona serviços
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllersWithViews();
 
-            // Conexão com o banco
-            services.AddEntityFrameworkSqlServer().AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            string conn = Environment.GetEnvironmentVariable("DB_CONNECTION");
+
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(conn)
+            );
 
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
