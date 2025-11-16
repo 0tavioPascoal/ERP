@@ -9,8 +9,11 @@ using ERP.Services.Graphic;
 using ERP.Services.Reports;
 using ERP.Services.Sales;
 using FastReport.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +36,34 @@ namespace ERP {
             services.AddEntityFrameworkSqlServer().AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>( opt => {
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireLowercase = true;
+                opt.Password.RequireUppercase = true;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequiredLength = 8;
+
+            });
+
+            services.AddControllersWithViews(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()  
+                    .Build();
+
+                options.Filters.Add(new AuthorizeFilter(policy)); 
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login"; 
+                options.AccessDeniedPath = "";
+            });
+
             FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection));
 
             // Injeção de dependência
@@ -49,7 +80,7 @@ namespace ERP {
             services.AddScoped<ReportService>();
         }
 
-        // Configura o pipeline
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             // 👉 Forçando cultura "en-US" para que decimais usem ponto (.)
             var cultureInfo = new CultureInfo("en-US");
@@ -70,13 +101,15 @@ namespace ERP {
             app.UseFastReport();
 
             app.UseRouting();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => {
+            app.UseEndpoints(endpoints =>
+            {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Account}/{action=Login}/{id?}");
             });
         }
     }

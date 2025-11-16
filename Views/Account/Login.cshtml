@@ -1,0 +1,54 @@
+﻿@using ERP.ViewModel
+@model LoginViewModel
+
+<div class="d-flex justify-content-center align-items-center" style="height: 90vh;">
+    <div class="card shadow-lg p-4" style="width: 420px; border-radius: 15px;">
+
+        <div class="text-center mb-4">
+            <img src="~/images/Login.jpg" width="60" class="mb-2" />
+            <h3 class="fw-bold">Acesso ao Sistema</h3>
+            <p class="text-muted">Entre com suas credenciais</p>
+        </div>
+
+        <form asp-controller="Account" asp-action="Login" method="post">
+
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="ReturnUrl" />
+
+            <div class="mb-3">
+                <label asp-for="Username" class="form-label fw-semibold"></label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-person-fill"></i>
+                    </span>
+                    <input asp-for="Username" class="form-control" placeholder="Digite seu usuário" />
+                </div>
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label fw-semibold"></label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock-fill"></i>
+                    </span>
+                    <input asp-for="Password" class="form-control" placeholder="Digite sua senha" type="password" />
+                </div>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="d-grid gap-2 mb-3">
+                <button type="submit" class="btn btn-success btn-lg">
+                    Entrar
+                </button>
+
+                <a asp-controller="Account" asp-action="Register"
+                   class="btn btn-outline-primary btn-lg">
+                    Criar Conta
+                </a>
+            </div>
+        </form>
+
+        <div class="text-center text-muted mt-3" style="font-size: 0.9rem;">
+            © 2025 - ERP • Desenvolvido por Otávio
+        </div>
+    </div>
+</div>
