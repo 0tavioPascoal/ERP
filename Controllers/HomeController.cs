@@ -1,26 +1,32 @@
-﻿using System;
+﻿using ERP.Models;
+using ERP.Services.Graphic;
+using ERP.Services.Reports;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using ERP.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ERP.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly SalesGraphicService salesGraphicService;
+
+        public HomeController(SalesGraphicService salesGraphicService)
         {
-            _logger = logger;
+            this.salesGraphicService = salesGraphicService;
         }
 
         public IActionResult Index()
         {
-            return View();
+
+            var salesGraphic = salesGraphicService.GetSalesGraphic(360);
+            return View(salesGraphic);
+        
         }
 
         public IActionResult Privacy()

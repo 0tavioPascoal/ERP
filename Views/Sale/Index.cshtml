@@ -1,0 +1,57 @@
+﻿@model IEnumerable<ERP.Models.Sale>
+
+@{
+    ViewData["Title"] = "Vendas";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Listagem de Vendas</h1>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-end">
+        <a role="button" class="btn btn-primary" asp-controller="Sale" asp-action="CreateSale">
+            Nova Venda
+        </a>
+    </div>
+
+    <table class="table table-hover align-middle mt-5" id="table-sales">
+        <thead>
+            <tr>
+                <th class="text-center">Id</th>
+                <th>Itens</th>
+                <th class="text-center">Qtd</th>
+                <th class="text-end">Preço</th>
+                <th class="text-center">Cliente</th>
+                <th>Pagamento</th>
+                <th>Criado</th>
+                <th colspan="2" class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sale in Model) {
+                <tr>
+                    <td class="text-center">@sale.Id</td>
+                    <td>
+                        @foreach (var item in sale.Items) {
+                            <div>@item.Product.Name</div>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @foreach (var item in sale.Items) {
+                            <div>@item.Quantity</div>
+                        }
+                    </td>
+                    <td class="text-end">@sale.Total.ToString("C")</td>
+                    <td class="text-center">@sale.Client.Name</td>
+                    <td>@sale.PaymentMethod</td>
+                    <td>@sale.SaleDate.ToString("dd/MM/yy")</td>
+                    <td class="text-center">
+                        <a class="btn btn-warning" asp-route-id="@sale.Id" asp-action="EditSale" asp-controller="Sale">Editar</a>
+                    </td>
+                    <td class="text-center">
+                        <a class="btn btn-danger" asp-route-id="@sale.Id" asp-action="Delete" asp-controller="Sale">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,140 @@
+﻿@model ERP.Models.Sale
+
+@{
+    ViewData["Title"] = "Nova Venda";
+    var clients = ViewBag.Clients as List<ERP.Models.Client>;
+    var products = ViewBag.Products as List<ERP.Models.Product>;
+    var paymentMethods = ViewBag.PaymentMethods as List<string>;
+}
+
+<div class="text-center">
+    <h1 class="display-4">Nova Venda</h1>
+    <p class="lead">Use este formulário para registrar uma nova venda.</p>
+</div>
+
+<form asp-action="CreateSale" method="post">
+    <div class="form-group">
+        <label asp-for="ClientId">Cliente:</label>
+        <select asp-for="ClientId" class="form-control">
+            <option value="0">Selecione um cliente</option>
+            @foreach (var client in clients) {
+                <option value="@client.Id">@client.Name</option>
+            }
+        </select>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PaymentMethod">Forma de Pagamento:</label>
+        <select asp-for="PaymentMethod" class="form-control">
+            <option value="">Selecione</option>
+            @foreach (var pm in paymentMethods) {
+                <option value="@pm">@pm</option>
+            }
+        </select>
+        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+
+    </div>
+
+    <h4>Produtos</h4>
+    <div class="form-group d-flex gap-2 mb-3">
+        <select id="productSelect" class="form-control">
+            <option value="">Selecione um produto</option>
+            @foreach (var product in products) {
+                <option value="@product.Id" data-price="@product.Price">@product.Name (@product.Price.ToString("C"))</option>
+            }
+        </select>
+        <input type="number" id="productQuantity" class="form-control" placeholder="Quantidade" min="1" value="1" />
+        <button type="button" id="addProductBtn" class="btn btn-primary">Adicionar Produto</button>
+    </div>
+
+    <table class="table table-hover" id="itemsTable">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Produtos adicionados aparecem aqui -->
+        </tbody>
+    </table>
+
+    <div class="mb-3">
+        <label>Total da Venda: </label>
+        <input type="text" id="totalSale" class="form-control" readonly value="0,00" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Finalizar Venda</button>
+    <a role="button" asp-action="Index" class="btn btn-warning ml-3">Cancelar</a>
+</form>
+
+@section Scripts {
+    <script>
+                let itemIndex = 0;
+        let total = 0;
+
+        // Mapeia os produtos adicionados pelo ProductId
+        const produtosAdicionados = {};
+
+        function atualizarTotal() {
+            const tableBody = document.getElementById('itemsTable').querySelector('tbody');
+            total = 0;
+            tableBody.querySelectorAll('tr').forEach(row => {
+                const qty = parseFloat(row.querySelector('input[name*="Quantity"]').value);
+                const price = parseFloat(row.querySelector('input[name*="UnitPrice"]').value);
+                total += qty * price;
+            });
+            document.getElementById('totalSale').value = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        document.getElementById('addProductBtn').addEventListener('click', function () {
+            const select = document.getElementById('productSelect');
+            const quantityInput = document.getElementById('productQuantity');
+            const tableBody = document.getElementById('itemsTable').querySelector('tbody');
+
+            const productId = select.value;
+            const productName = select.options[select.selectedIndex].text;
+            const price = parseFloat(select.options[select.selectedIndex].dataset.price);
+            const quantity = parseInt(quantityInput.value);
+
+            if (!productId || quantity <= 0) return;
+
+            // Se já existe, apenas soma a quantidade
+            if (produtosAdicionados[productId]) {
+                const row = produtosAdicionados[productId];
+                const inputQty = row.querySelector('input[name*="Quantity"]');
+                inputQty.value = parseInt(inputQty.value) + quantity;
+                row.querySelector('td:nth-child(3)').innerText = inputQty.value; // Atualiza visual
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${productName}<input type="hidden" name="Items[${itemIndex}].ProductId" value="${productId}" /></td>
+                    <td>${price.toFixed(2)}<input type="hidden" name="Items[${itemIndex}].UnitPrice" value="${price}" /></td>
+                    <td>${quantity}<input type="hidden" name="Items[${itemIndex}].Quantity" value="${quantity}" /></td>
+                    <td><button type="button" class="btn btn-danger btn-sm removeBtn">Remover</button></td>
+                `;
+                tableBody.appendChild(row);
+
+                // Adiciona ao mapa de produtos
+                produtosAdicionados[productId] = row;
+
+                // Botão remover
+                row.querySelector('.removeBtn').addEventListener('click', function () {
+                    delete produtosAdicionados[productId];
+                    row.remove();
+                    atualizarTotal();
+                });
+
+                itemIndex++;
+            }
+
+            select.value = "";
+            quantityInput.value = 1;
+            atualizarTotal();
+        });
+
+    </script>
+}
