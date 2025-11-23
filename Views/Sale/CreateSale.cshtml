@@ -90,7 +90,7 @@
             document.getElementById('totalSale').value = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        document.getElementById('addProductBtn').addEventListener('click', function () {
+               document.getElementById('addProductBtn').addEventListener('click', function () {
             const select = document.getElementById('productSelect');
             const quantityInput = document.getElementById('productQuantity');
             const tableBody = document.getElementById('itemsTable').querySelector('tbody');
@@ -102,26 +102,41 @@
 
             if (!productId || quantity <= 0) return;
 
-            // Se já existe, apenas soma a quantidade
+            // Se jÃ¡ existe, apenas soma a quantidade
             if (produtosAdicionados[productId]) {
+
                 const row = produtosAdicionados[productId];
-                const inputQty = row.querySelector('input[name*="Quantity"]');
-                inputQty.value = parseInt(inputQty.value) + quantity;
-                row.querySelector('td:nth-child(3)').innerText = inputQty.value; // Atualiza visual
+
+                // Atualiza o input oculto (ESSENCIAL)
+                const hiddenQty = row.querySelector('input[name*="Quantity"]');
+                hiddenQty.value = parseInt(hiddenQty.value) + quantity;
+
+                // Atualiza o texto exibido
+                row.querySelector('.qtyText').innerText = hiddenQty.value;
+
             } else {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${productName}<input type="hidden" name="Items[${itemIndex}].ProductId" value="${productId}" /></td>
-                    <td>${price.toFixed(2)}<input type="hidden" name="Items[${itemIndex}].UnitPrice" value="${price}" /></td>
-                    <td>${quantity}<input type="hidden" name="Items[${itemIndex}].Quantity" value="${quantity}" /></td>
+                    <td>${productName}
+                        <input type="hidden" name="Items[${itemIndex}].ProductId" value="${productId}" />
+                    </td>
+
+                    <td>${price.toFixed(2)}
+                        <input type="hidden" name="Items[${itemIndex}].UnitPrice" value="${price}" />
+                    </td>
+
+                    <td>
+                        <span class="qtyText">${quantity}</span>
+                        <input type="hidden" name="Items[${itemIndex}].Quantity" value="${quantity}" />
+                    </td>
+
                     <td><button type="button" class="btn btn-danger btn-sm removeBtn">Remover</button></td>
                 `;
+
                 tableBody.appendChild(row);
 
-                // Adiciona ao mapa de produtos
                 produtosAdicionados[productId] = row;
 
-                // Botão remover
                 row.querySelector('.removeBtn').addEventListener('click', function () {
                     delete produtosAdicionados[productId];
                     row.remove();
@@ -133,6 +148,7 @@
 
             select.value = "";
             quantityInput.value = 1;
+
             atualizarTotal();
         });
 
