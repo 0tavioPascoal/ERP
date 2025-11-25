@@ -30,9 +30,14 @@ namespace ERP {
         }
         public IConfiguration Configuration { get; }
 
-        // Adiciona serviços
         public void ConfigureServices(IServiceCollection services) {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(options => {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+                options.Filters.Add(new AuthorizeFilter(policy));
+            });
 
             string conn = Environment.GetEnvironmentVariable("DB_CONNECTION");
 
@@ -47,49 +52,37 @@ namespace ERP {
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.Configure<IdentityOptions>( opt => {
+            services.Configure<IdentityOptions>(opt => {
                 opt.Password.RequireDigit = false;
                 opt.Password.RequireLowercase = true;
                 opt.Password.RequireUppercase = true;
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequiredLength = 8;
-
             });
 
-            services.AddControllersWithViews(options =>
-            {
-                var policy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()  
-                    .Build();
-
-                options.Filters.Add(new AuthorizeFilter(policy)); 
-            });
-
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/Account/Login"; 
+            services.ConfigureApplicationCookie(options => {
+                options.LoginPath = "/Account/Login";
                 options.AccessDeniedPath = "";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.None; 
             });
 
             FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection));
 
-            // Injeção de dependência
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
 
-            // Repository
+   
             services.AddScoped<ISaleRepository, SalesRepository>();
 
-            // Service
+ 
             services.AddScoped<SaleService>();
             services.AddScoped<SalesGraphicService>();
 
             services.AddScoped<ReportService>();
         }
 
-        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-            // 👉 Forçando cultura "en-US" para que decimais usem ponto (.)
             var cultureInfo = new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
@@ -102,18 +95,19 @@ namespace ERP {
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+           
+
             app.UseStaticFiles();
 
             app.UseFastReport();
 
             app.UseRouting();
+
             app.UseAuthentication();
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Account}/{action=Login}/{id?}");
